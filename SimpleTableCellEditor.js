@@ -1,10 +1,11 @@
 class SimpleTableCellEdition {
 
-    constructor(elem) {
+    constructor(elem, _cellParams) {
 
         this.Elem = elem;
         this.oldContent = $(elem).html();
         this.oldValue = $(elem).text();
+        this.cellParams = _cellParams;
     }
 
 }
@@ -62,7 +63,7 @@ class SimpleTableCellEditor {
 
         this._FreeCurrentCell(cellParams);
 
-        this.CellEdition = new SimpleTableCellEdition(elem);
+        this.CellEdition = new SimpleTableCellEdition(elem, cellParams);
 
         var content = $(elem).text();
         $(elem).addClass(this.params.inEditClass);
@@ -118,12 +119,17 @@ class SimpleTableCellEditor {
 
     _FreeCurrentCell() {
 
-        this._EndEditCell(this._GetCurrentCell());
+        var current = this._GetCurrentEdition();
+
+        if (current === null)
+            return;
+
+        this._EndEditCell(current.Elem, current.cellParams);
     }
 
-    _GetCurrentCell() {
+    _GetCurrentEdition() {
 
-        return (this.CellEdition === null ? null : this.CellEdition.Elem);
+        return (this.CellEdition === null ? null : this.CellEdition);
     }
 
     _GetDefaultEditorParams() {
