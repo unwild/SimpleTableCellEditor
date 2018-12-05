@@ -10,12 +10,14 @@ Simple Usage exemple :
 	    <tr>
 	      <td class="editMe">Editable text</td>
 	      <td>Uneditable text</td>
+	      <td class="feedMeNumbers">Numbers only</td>
 	    </tr>
     </table>
     
     <script>
       editor = new SimpleTableCellEditor("myTableId");
       editor.SetEditableClass("editMe");
+      editor.SetEditableClass("feedMeNumbers", { validation: $.isNumeric }); //If validation return false, value is not updated
    
       $('#myTableId').on("cell:edited", function (event) {              
         console.log(`Cell edited : ${event.oldValue} => ${event.newValue}`);
