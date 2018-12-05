@@ -1,4 +1,5 @@
 
+
 # SimpleTableCellEditor
 Simple Jquery based table cell editor
 
@@ -23,3 +24,9 @@ Simple Usage exemple :
         console.log(`Cell edited : ${event.oldValue} => ${event.newValue}`);
       });               
     </script>
+
+
+"cell:edited" event contains :
+ - evt.element -> Modified TD Jquery DOM object
+ - evt.oldValue
+ - evt.newValue
