@@ -1,17 +1,4 @@
-class CellEditorOptions {
-
-    constructor(contentType) {
-
-        if (typeof contentType === 'undefined')
-            contentType = "text";
-
-        this.ContentType = contentType;
-
-    }
-
-}
-
-class CellEdition {
+class SimpleTableCellEdition {
 
     constructor(elem) {
 
@@ -22,22 +9,18 @@ class CellEdition {
 
 }
 
-class CellEditor {
+class SimpleTableCellEditor {
 
-    constructor(_tableId, _inEditClass) {
+    constructor(_tableId, _params) {
 
         var _instance = this;
 
         if (typeof _tableId === 'undefined')
             _tableId = "table";
 
-        if (typeof _inEditClass === 'undefined')
-            _inEditClass = 'inEdit';
-
-
         this.tableId = _tableId; //Store the tableId (One CellEditor must be instantiated for each table)
-        this.inEditClass = _inEditClass; //class used to flag cell in edit mode
 
+        this.params = $.extend({}, _params, _instance._GetDefaultParams()); //Load default params over given ones
         this.CellEdition = null; //CellEdition contains the current edited cell
 
 
@@ -47,42 +30,40 @@ class CellEditor {
             var container = $(`#${_instance.tableId}`);
 
             if (!container.is(e.target) && container.has(e.target).length === 0) {
-                _instance.FreeCurrentCell();
+                _instance._FreeCurrentCell();
             }
         });
     }
 
-    SetClassEditable(editableClass, options) {
+    SetEditableClass(editableClass) {
 
         var _instance = this;
 
-        if (typeof options === 'undefined')
-            options = new CellEditorOptions();
-
         //If click on td (not already in edit ones)
-        $(`#${this.tableId}`).on('click', `td.${editableClass}:not(.${_instance.inEditClass})`, function () {
-            _instance.EditCell(this, options);
+        $(`#${this.tableId}`).on('click', `td.${editableClass}:not(.${_instance.params.inEditClass})`, function () {
+            _instance._EditCell(this);
         });
 
 
-        $(`#${this.tableId}`).on('keydown', `td.${editableClass}.${this.inEditClass}`, function (event) {
+        $(`#${this.tableId}`).on('keydown', `td.${editableClass}.${_instance.params.inEditClass}`, function (event) {
 
             if (event.which === 13)
-                _instance.EndEditCell(this);
+                _instance._EndEditCell(this);
             else if (event.which === 27)
-                _instance.AbortEditCell(this);
+                _instance._AbortEditCell(this);
         });
 
     }
 
-    EditCell(elem, options) {
 
-        this.FreeCurrentCell();
+    _EditCell(elem) {
 
-        this.CellEdition = new CellEdition(elem);
+        this._FreeCurrentCell();
+
+        this.CellEdition = new SimpleTableCellEdition(elem);
 
         var content = $(elem).text();
-        $(elem).addClass(this.inEditClass);
+        $(elem).addClass(this.params.inEditClass);
         $(elem).html(`<input type='text' style="width:100%; max-width:none">`);
 
         var input = $(elem).find('input');
@@ -90,22 +71,22 @@ class CellEditor {
         input.val(content);
     }
 
-    EndEditCell(elem) {
-        this.FreeCell(elem, true);
+    _EndEditCell(elem) {
+        this._FreeCell(elem, true);
     }
 
-    AbortEditCell(elem) {
-        this.FreeCell(elem, false);
+    _AbortEditCell(elem) {
+        this._FreeCell(elem, false);
     }
 
-    FreeCell(elem, keepChanges) {
+    _FreeCell(elem, keepChanges) {
 
         if (typeof $(elem).length === 'undefined' || $(elem).length === 0)
             return;
 
         var newVal = $(elem).find('input').val();
 
-        $(elem).removeClass(this.inEditClass);
+        $(elem).removeClass(this.params.inEditClass);
         $(elem).html('');
 
         if (keepChanges)
@@ -127,18 +108,25 @@ class CellEditor {
         }
 
         this.CellEdition = null;
-
-
     }
 
-    FreeCurrentCell() {
+    _FreeCurrentCell() {
 
-        this.EndEditCell(this.GetCurrentCell());
+        this._EndEditCell(this._GetCurrentCell());
     }
 
-    GetCurrentCell() {
+    _GetCurrentCell() {
 
-        // return $(`#${this.tableId}`).find(`td.${this.inEditClass}`);
         return (this.CellEdition === null ? null : this.CellEdition.Elem);
     }
+
+    _GetDefaultParams() {
+
+        return {
+            inEditClass: "inEdit", //class used to flag cell in edit mode
+            validation: (value) => { return true; } //method used to validate new value
+        };
+
+    }
+
 }
