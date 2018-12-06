@@ -84,7 +84,7 @@ class SimpleTableCellEditor {
 
     _FreeCell(elem, cellParams, keepChanges) {
 
-        if (typeof $(elem).length === 'undefined' || $(elem).length === 0 || this.CellEdition === null)
+        if (typeof $(elem).length === 'undefined' || $(elem).length === 0 || elem === null || this.CellEdition === null)
             return;
 
         var newVal = $(elem).find('input').val();
