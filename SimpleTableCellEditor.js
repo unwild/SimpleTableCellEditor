@@ -96,21 +96,24 @@ class SimpleTableCellEditor {
         if (!cellParams.validation(newVal))
             keepChanges = false;
 
-        if (keepChanges)
-            $(elem).text(newVal);
-        else
-            $(elem).html(this.CellEdition.oldContent);
-
-
         if (keepChanges) {
+
+            var formattedNewVal = cellParams.formatter(newVal);
+
+            $(elem).text(formattedNewVal);
 
             //Trigger custom event
             $(`#${this.tableId}`).trigger({
                 type: "cell:edited",
                 element: elem,
-                newValue: newVal,
+                newValue: formattedNewVal,
                 oldValue: this.CellEdition.oldValue
             });
+
+        }
+        else {
+
+            $(elem).html(this.CellEdition.oldContent);
 
         }
 
@@ -142,7 +145,8 @@ class SimpleTableCellEditor {
     _GetDefaultCellParams() {
 
         return {
-            validation: (value) => { return true; } //method used to validate new value
+            validation: (value) => { return true; }, //method used to validate new value
+            formatter: (value) => { return value; } //Method used to format new value
         };
 
     }
