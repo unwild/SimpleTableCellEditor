@@ -1,11 +1,27 @@
+## SimpleTableCellEditor
+#### Simple Jquery based table td editor
+*SimpleTableCellEditor requires JQuery*
 
+Allow table content to be edited clientside, with a click inside editable cell.
+A 'cell:edited' event is triggered if the cell content has been edited.
 
-# SimpleTableCellEditor
-Simple Jquery based table cell editor
+'cell:edited' event contains :
+ - evt.element (JQuery node object)
+ - evt.oldValue
+ - evt.newValue
 
-Needs JQuery !
+## Methods
+ - SimpleTableCellEditor : constructor(tableId, tableCellEditorParams)
+ - SimpleTableCellEditor : SetEditableClass(className, cellEditorParams)
 
-Simple Usage exemple :
+## Parameters
+
+* tableCellEditorParams
+  * inEditClass : class used to flag td in edit mode
+* cellEditorParams
+  * validation : method used to validate new value
+  * formatter : method to format new value
+## Usage exemple
 
     <table id="myTableId">
 	    <tr>
@@ -24,9 +40,3 @@ Simple Usage exemple :
         console.log(`Cell edited : ${event.oldValue} => ${event.newValue}`);
       });               
     </script>
-
-
-"cell:edited" event contains :
- - evt.element -> Modified TD Jquery DOM object
- - evt.oldValue
- - evt.newValue
