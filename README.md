@@ -58,7 +58,7 @@ Full parameters exemple :
       
       editor.SetEditableClass("editMe", {  //tds with .editMe class will be editable
             validation: $.isNumeric,  //value entered must be numeric
-            formatter: (val) => { return val * 10; },  //value entered will be mutliplied by 10
+            formatter: (val) => { return val * 10; },  //value entered will be multiplied by 10
             keys: {
                 validation: [13, 107, 35], //these keys will trigger validation (evt.which)
                 cancellation: [27, 109] //these keys will trigger cancellation (evt.which)
