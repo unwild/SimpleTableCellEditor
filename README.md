@@ -51,8 +51,11 @@ Full parameters exemple :
 	      <td class="editMe">editable numbers</td>
 	    </tr>
     </table> 
+    
     <script>
+    
       editor = new SimpleTableCellEditor("myTableId", { inEditClass: "busy" } );
+      
       editor.SetEditableClass("editMe", {  //tds with .editMe class will be editable
             validation: $.isNumeric,  //value entered must be numeric
             formatter: (val) => { return val * 10; },  //value entered will be mutliplied by 10
@@ -60,5 +63,6 @@ Full parameters exemple :
                 validation: [13, 107, 35], //these keys will trigger validation (evt.which)
                 cancellation: [27, 109] //these keys will trigger cancellation (evt.which)
             }
+	    
         });            
     </script>
