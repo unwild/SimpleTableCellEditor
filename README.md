@@ -1,4 +1,5 @@
 
+
 ## SimpleTableCellEditor
 #### Simple Jquery based table td editor
 *SimpleTableCellEditor requires JQuery*
@@ -6,10 +7,19 @@
 Allow table content to be edited clientside, with a click inside editable cell.
 A 'cell:edited' event is triggered if the cell content has been edited.
 
-'cell:edited' event contains :
- - evt.element (JQuery node object)
- - evt.oldValue
- - evt.newValue
+## Events
+* "cell:edited" event contains :
+  * evt.element (JQuery node object)
+  * evt.oldValue
+  * evt.newValue
+* "cell:onEditEnter"
+  * evt.element (JQuery node object)
+  * evt.oldValue
+* "cell:onEditExit"
+  * evt.element (JQuery node object)
+  * evt.oldValue
+  * evt.newValue
+  * evt.applied (boolean, will the edition be applied)
 
 ## Methods
  - SimpleTableCellEditor : constructor(tableId, tableCellEditorParams)
@@ -66,3 +76,21 @@ Full parameters exemple :
 	    
         });            
     </script>
+
+## Advanced options
+
+### cellParams.internals
+cellParams.internals can be overridden.
+Default value for cellParams.internals : 
+
+      {
+    		renderValue: (elem, formattedNewVal) => { $(elem).text(formattedNewVal); },
+    		renderEditor: (elem, oldVal) => {
+    			$(elem).html(`<input type='text' style="width:100%; max-width:none">`);
+    			var input = $(elem).find('input');
+    			input.focus();
+    			input.val(oldVal);
+    		},
+    		extractEditorValue: (elem) => { return $(elem).find('input').val(); },
+    		extractValue: (elem) => { return $(elem).text(); }
+    };
