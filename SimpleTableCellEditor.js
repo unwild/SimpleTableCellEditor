@@ -114,6 +114,9 @@ class SimpleTableCellEditor {
         //Rendering 
         cellParams.internals.renderEditor(elem, oldVal);
 
+        //Trigger custom event
+        this._FireOnEditEnterEvent(elem, oldVal);
+
     }
 
     _EndEditCell(elem, cellParams) {
@@ -140,21 +143,19 @@ class SimpleTableCellEditor {
         if (!cellParams.validation(newVal))
             keepChanges = false;
 
-        if (keepChanges) {
+        //format new value
+        var formattedNewVal = cellParams.formatter(newVal);
 
-            //format new value
-            var formattedNewVal = cellParams.formatter(newVal);
+        //Trigger custom event
+        this._FireOnEditExitEvent(elem, this.CellEdition.oldValue, formattedNewVal, keepChanges);
+
+        if (keepChanges) {
 
             //render new value in cell
             cellParams.internals.renderValue(elem, formattedNewVal);
 
             //Trigger custom event
-            $(`#${this.tableId}`).trigger({
-                type: "cell:edited",
-                element: elem,
-                newValue: formattedNewVal,
-                oldValue: this.CellEdition.oldValue
-            });
+            _instance._FireEditedEvent(elem, this.CellEdition.oldValue, formattedNewVal);
 
         }
         else {
@@ -235,6 +236,36 @@ class SimpleTableCellEditor {
             extractValue: (elem) => { return $(elem).text(); }
         };
 
+    }
+
+    _FireOnEditEnterEvent(elem, oldVal) {
+
+        $(`#${this.tableId}`).trigger({
+            type: "cell:onEditEnter",
+            element: elem,
+            oldValue: oldVal
+        });
+    }
+
+    _FireOnEditExitEvent(elem, oldVal, newVal, applied) {
+
+        $(`#${this.tableId}`).trigger({
+            type: "cell:onEditExit",
+            element: elem,
+            newValue: newVal,
+            oldValue: oldVal,
+            applied: applied
+        });
+    }
+
+    _FireEditedEvent(elem, oldVal, newVal) {
+
+        $(`#${this.tableId}`).trigger({
+            type: "cell:edited",
+            element: elem,
+            newValue: newVal,
+            oldValue: oldVal
+        });
     }
 
 
