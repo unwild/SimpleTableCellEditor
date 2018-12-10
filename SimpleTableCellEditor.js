@@ -4,7 +4,7 @@ class SimpleTableCellEdition {
 
         this.Elem = elem;
         this.oldContent = $(elem).html();
-        this.oldValue = $(elem).text();
+        this.oldValue = _cellParams.internals.extractValue(elem);
         this.cellParams = _cellParams;
     }
 
@@ -105,13 +105,15 @@ class SimpleTableCellEditor {
 
         this.CellEdition = new SimpleTableCellEdition(elem, cellParams);
 
-        var content = $(elem).text();
-        $(elem).addClass(this.params.inEditClass);
-        $(elem).html(`<input type='text' style="width:100%; max-width:none">`);
+        //Extract old/current value from cell
+        var oldVal = cellParams.internals.extractValue(elem);
 
-        var input = $(elem).find('input');
-        input.focus();
-        input.val(content);
+        //flagging working cell
+        $(elem).addClass(this.params.inEditClass);
+
+        //Rendering 
+        cellParams.internals.renderEditor(elem, oldVal);
+
     }
 
     _EndEditCell(elem, cellParams) {
@@ -127,8 +129,10 @@ class SimpleTableCellEditor {
         if (!this._isValidElem(elem) || this.CellEdition === null)
             return;
 
-        var newVal = $(elem).find('input').val();
+        //Get new val
+        var newVal = cellParams.internals.extractEditorValue(elem);
 
+        //clean cell
         $(elem).removeClass(this.params.inEditClass);
         $(elem).html('');
 
@@ -138,9 +142,11 @@ class SimpleTableCellEditor {
 
         if (keepChanges) {
 
+            //format new value
             var formattedNewVal = cellParams.formatter(newVal);
 
-            $(elem).text(formattedNewVal);
+            //render new value in cell
+            cellParams.internals.renderValue(elem, formattedNewVal);
 
             //Trigger custom event
             $(`#${this.tableId}`).trigger({
@@ -153,6 +159,7 @@ class SimpleTableCellEditor {
         }
         else {
 
+            //render old value
             $(elem).html(this.CellEdition.oldContent);
 
         }
@@ -208,7 +215,24 @@ class SimpleTableCellEditor {
             keys: {
                 validation: [13],
                 cancellation: [27]
-            }
+            },
+            internals: this._GetDefaultInternals()
+        };
+
+    }
+
+    _GetDefaultInternals() {
+
+        return {
+            renderValue: (elem, formattedNewVal) => { $(elem).text(formattedNewVal); },
+            renderEditor: (elem, oldVal) => {
+                $(elem).html(`<input type='text' style="width:100%; max-width:none">`);
+                var input = $(elem).find('input');
+                input.focus();
+                input.val(oldVal);
+            },
+            extractEditorValue: (elem) => { return $(elem).find('input').val(); },
+            extractValue: (elem) => { return $(elem).text(); }
         };
 
     }
