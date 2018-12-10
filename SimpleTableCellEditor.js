@@ -21,7 +21,7 @@ class SimpleTableCellEditor {
 
         this.tableId = _tableId; //Store the tableId (One CellEditor must be instantiated for each table)
 
-        this.params = $.extend({}, _instance._GetDefaultEditorParams(), _params); //Load default params over given ones
+        this.params = _instance._GetExtendedEditorParams(_params); //Load default params over given ones
         this.CellEdition = null; //CellEdition contains the current edited cell
 
 
@@ -36,11 +36,43 @@ class SimpleTableCellEditor {
         });
     }
 
+
+    SetEditable(elem, _cellParams) {
+
+        var _instance = this;
+
+        if (!_instance._isValidElem(elem))
+            return;
+
+        var cellParams = _instance._GetExtendedCellParams(_cellParams);
+
+        //If click on td (not already in edit ones)
+        $(elem).on('click', function () {
+
+            if ($(this).hasClass(_instance.params.inEditClass))
+                return;
+
+            _instance._EditCell(this, cellParams);
+        });
+
+
+        $(elem).on('keydown', function (event) {
+
+            if (!$(this).hasClass(_instance.params.inEditClass))
+                return;
+
+
+            _instance._HandleKeyPressed(event.which, this, cellParams);
+
+        });
+
+    }
+
     SetEditableClass(editableClass, _cellParams) {
 
         var _instance = this;
 
-        var cellParams = $.extend({}, _instance._GetDefaultCellParams(), _cellParams);
+        var cellParams = _instance._GetExtendedCellParams(_cellParams);
 
         //If click on td (not already in edit ones)
         $(`#${this.tableId}`).on('click', `td.${editableClass}:not(.${_instance.params.inEditClass})`, function () {
@@ -50,14 +82,22 @@ class SimpleTableCellEditor {
 
         $(`#${this.tableId}`).on('keydown', `td.${editableClass}.${_instance.params.inEditClass}`, function (event) {
 
-            if (event.which === 13)
-                _instance._EndEditCell(this, cellParams);
-            else if (event.which === 27)
-                _instance._AbortEditCell(this, cellParams);
+            _instance._HandleKeyPressed(event.which, this, cellParams);
+
         });
 
     }
 
+
+    _HandleKeyPressed(which, elem, cellParams) {
+
+        if (cellParams.keys.validation.includes(which))
+            this._EndEditCell(elem, cellParams);
+
+        else if (cellParams.keys.cancellation.includes(which))
+            this._CancelEditCell(elem, cellParams);
+
+    }
 
     _EditCell(elem, cellParams) {
 
@@ -78,13 +118,13 @@ class SimpleTableCellEditor {
         this._FreeCell(elem, cellParams, true);
     }
 
-    _AbortEditCell(elem, cellParams) {
+    _CancelEditCell(elem, cellParams) {
         this._FreeCell(elem, cellParams, false);
     }
 
     _FreeCell(elem, cellParams, keepChanges) {
 
-        if (typeof $(elem).length === 'undefined' || $(elem).length === 0 || elem === null || this.CellEdition === null)
+        if (!this._isValidElem(elem) || this.CellEdition === null)
             return;
 
         var newVal = $(elem).find('input').val();
@@ -135,6 +175,24 @@ class SimpleTableCellEditor {
         return (this.CellEdition === null ? null : this.CellEdition);
     }
 
+
+    _GetExtendedEditorParams(_params) {
+
+        var _instance = this;
+
+        return $.extend(true, {}, _instance._GetDefaultEditorParams(), _params);
+
+    }
+
+    _GetExtendedCellParams(_cellParams) {
+
+        var _instance = this;
+
+        return $.extend(true, {}, _instance._GetDefaultCellParams(), _cellParams);
+
+    }
+
+
     _GetDefaultEditorParams() {
 
         return {
@@ -146,9 +204,18 @@ class SimpleTableCellEditor {
 
         return {
             validation: (value) => { return true; }, //method used to validate new value
-            formatter: (value) => { return value; } //Method used to format new value
+            formatter: (value) => { return value; }, //Method used to format new value
+            keys: {
+                validation: [13],
+                cancellation: [27]
+            }
         };
 
+    }
+
+
+    _isValidElem(elem) {
+        return (elem !== null && typeof elem !== 'undefined' && $(elem).length > 0);
     }
 
 }
