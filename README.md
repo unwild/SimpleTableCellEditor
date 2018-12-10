@@ -12,6 +12,7 @@ A 'cell:edited' event is triggered if the cell content has been edited.
 
 ## Methods
  - SimpleTableCellEditor : constructor(tableId, tableCellEditorParams)
+ - SimpleTableCellEditor : SetEditable(element, cellEditorParams)
  - SimpleTableCellEditor : SetEditableClass(className, cellEditorParams)
 
 ## Parameters
@@ -21,6 +22,7 @@ A 'cell:edited' event is triggered if the cell content has been edited.
 * cellEditorParams
   * validation : method used to validate new value
   * formatter : method to format new value
+  * keys : keys handling validation and cancellation. Default value : { validation : [13], cancellation :[37] }  
 ## Usage exemple
 
     <table id="myTableId">
