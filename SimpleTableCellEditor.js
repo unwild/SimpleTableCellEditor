@@ -155,7 +155,7 @@ class SimpleTableCellEditor {
             cellParams.internals.renderValue(elem, formattedNewVal);
 
             //Trigger custom event
-            _instance._FireEditedEvent(elem, this.CellEdition.oldValue, formattedNewVal);
+            this._FireEditedEvent(elem, this.CellEdition.oldValue, formattedNewVal);
 
         }
         else {
