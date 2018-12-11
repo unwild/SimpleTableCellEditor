@@ -288,22 +288,23 @@ class SimpleTableCellEditor {
     //DataTable specific methods
     _TryHandleDataTableReloadEvent() {
 
+        var _instance = this;
         this.isDataTable = false;
 
         try {
-            if ($.fn.DataTable.isDataTable(`#${_tableId}`))
-                this.isDataTable = true;
+            if ($.fn.DataTable.isDataTable(`#${_instance.tableId}`))
+                _instance.isDataTable = true;
         } catch (e) {
             return;
         }
 
-        if (this.isDataTable) {
+        if (_instance.isDataTable) {
 
-            $(`#${this.tableId}`).on('draw.dt', function () {
+            $(`#${_instance.tableId}`).on('draw.dt', function () {
 
                 if (_instance.CellEdition !== null && _instance.CellEdition.Elem !== null) {
 
-                    var node = $(`#${this.tableId}`).DataTable().cell(_instance.CellEdition.cellIndex).node();
+                    var node = $(`#${_instance.tableId}`).DataTable().cell(_instance.CellEdition.cellIndex).node();
                     _instance._EditCell(node, _instance.CellEdition.cellParams);
 
                 }
