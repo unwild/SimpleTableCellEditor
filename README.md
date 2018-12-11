@@ -5,7 +5,9 @@
 *SimpleTableCellEditor requires JQuery*
 
 Allow table content to be edited clientside, with a click inside editable cell.  
-A 'cell:edited' event is triggered if the cell content has been edited and the content changed.  
+A 'cell:edited' event is triggered if the cell content has been edited and the content changed.
+
+Quick example : https://codepen.io/anon/pen/xmGOew
 
 ## Events
 * "cell:edited" event contains :
