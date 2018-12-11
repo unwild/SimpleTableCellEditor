@@ -4,8 +4,8 @@
 #### Simple Jquery based table td editor
 *SimpleTableCellEditor requires JQuery*
 
-Allow table content to be edited clientside, with a click inside editable cell.
-A 'cell:edited' event is triggered if the cell content has been edited.
+Allow table content to be edited clientside, with a click inside editable cell.  
+A 'cell:edited' event is triggered if the cell content has been edited and the content changed.  
 
 ## Events
 * "cell:edited" event contains :
@@ -34,8 +34,9 @@ A 'cell:edited' event is triggered if the cell content has been edited.
   * validation : method used to validate new value
   * formatter : method to format new value
   * keys : keys handling validation and cancellation. Default value : { validation : [13], cancellation : [37] }  
+  
 ## Usage exemple
-
+```html
     <table id="myTableId">
 	    <tr>
 	      <td class="editMe">Editable text</td>
@@ -43,7 +44,8 @@ A 'cell:edited' event is triggered if the cell content has been edited.
 	      <td class="feedMeNumbers">Numbers only</td>
 	    </tr>
     </table>
-    
+```
+```javascript
     <script>
       editor = new SimpleTableCellEditor("myTableId");
       editor.SetEditableClass("editMe");
@@ -53,15 +55,16 @@ A 'cell:edited' event is triggered if the cell content has been edited.
         console.log(`Cell edited : ${event.oldValue} => ${event.newValue}`);
       });               
     </script>
-
+```
 Full parameters exemple :
-
+```html
     <table id="myTableId">
 	    <tr>
 	      <td class="editMe">editable numbers</td>
 	    </tr>
     </table> 
-    
+```
+```javascript
     <script>
     
       editor = new SimpleTableCellEditor("myTableId", { inEditClass: "busy" } );
@@ -76,12 +79,17 @@ Full parameters exemple :
 	    
         });            
     </script>
+```
+## DataTable Support
+* DataTable table redrawn is supported, active cell editor will reappear after a table reload
+
 
 ## Advanced options
 
 ### cellParams.internals
-cellParams.internals can be overridden.
-Default value for cellParams.internals : 
+cellParams.internals can be overridden.  
+Default value for cellParams.internals :  
+```javascript
 
       {
     		renderValue: (elem, formattedNewVal) => { $(elem).text(formattedNewVal); },
@@ -94,3 +102,4 @@ Default value for cellParams.internals :
     		extractEditorValue: (elem) => { return $(elem).find('input').val(); },
     		extractValue: (elem) => { return $(elem).text(); }
     };
+```
