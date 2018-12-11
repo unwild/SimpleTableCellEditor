@@ -24,6 +24,8 @@ class SimpleTableCellEditor {
         this.params = _instance._GetExtendedEditorParams(_params); //Load default params over given ones
         this.CellEdition = null; //CellEdition contains the current edited cell
 
+        //If DataTable : Handling DataTable reload event
+        this._TryHandleDataTableReloadEvent();
 
         //Handle click outside table to end edition
         $(document).mouseup(function (e) {
@@ -33,6 +35,8 @@ class SimpleTableCellEditor {
             if (!container.is(e.target) && container.has(e.target).length === 0) {
                 _instance._FreeCurrentCell();
             }
+
+            return;
         });
     }
 
@@ -47,12 +51,13 @@ class SimpleTableCellEditor {
         var cellParams = _instance._GetExtendedCellParams(_cellParams);
 
         //If click on td (not already in edit ones)
-        $(elem).on('click', function () {
+        $(elem).on('click', function (evt) {
 
             if ($(this).hasClass(_instance.params.inEditClass))
                 return;
 
             _instance._EditCell(this, cellParams);
+
         });
 
 
@@ -89,6 +94,7 @@ class SimpleTableCellEditor {
     }
 
 
+    //Private methods
     _HandleKeyPressed(which, elem, cellParams) {
 
         if (cellParams.keys.validation.includes(which))
@@ -101,9 +107,15 @@ class SimpleTableCellEditor {
 
     _EditCell(elem, cellParams) {
 
-        this._FreeCurrentCell(cellParams);
+        //We free up hypothetical previous cell
+        this._FreeCurrentCell();
 
         this.CellEdition = new SimpleTableCellEdition(elem, cellParams);
+
+        //Storing DataTable index if table is DataTable
+        if (this.isDataTable) {
+            this.CellEdition.cellIndex = $(`#${this.tableId}`).DataTable().cell($(elem)).index();
+        }
 
         //Extract old/current value from cell
         var oldVal = cellParams.internals.extractValue(elem);
@@ -139,12 +151,12 @@ class SimpleTableCellEditor {
         $(elem).removeClass(this.params.inEditClass);
         $(elem).html('');
 
-        //if validation method return false for new value
-        if (!cellParams.validation(newVal))
-            keepChanges = false;
-
         //format new value
         var formattedNewVal = cellParams.formatter(newVal);
+
+        //if validation method return false for new value AND value changed
+        if (!cellParams.validation(newVal) || this.CellEdition.oldValue === formattedNewVal)
+            keepChanges = false;
 
         //Trigger custom event
         this._FireOnEditExitEvent(elem, this.CellEdition.oldValue, formattedNewVal, keepChanges);
@@ -201,6 +213,7 @@ class SimpleTableCellEditor {
     }
 
 
+    //Defaults
     _GetDefaultEditorParams() {
 
         return {
@@ -228,6 +241,7 @@ class SimpleTableCellEditor {
             renderValue: (elem, formattedNewVal) => { $(elem).text(formattedNewVal); },
             renderEditor: (elem, oldVal) => {
                 $(elem).html(`<input type='text' style="width:100%; max-width:none">`);
+                //Focus part
                 var input = $(elem).find('input');
                 input.focus();
                 input.val(oldVal);
@@ -238,6 +252,8 @@ class SimpleTableCellEditor {
 
     }
 
+
+    //Events
     _FireOnEditEnterEvent(elem, oldVal) {
 
         $(`#${this.tableId}`).trigger({
@@ -269,6 +285,38 @@ class SimpleTableCellEditor {
     }
 
 
+    //DataTable specific methods
+    _TryHandleDataTableReloadEvent() {
+
+        this.isDataTable = false;
+
+        try {
+            if ($.fn.DataTable.isDataTable(`#${_tableId}`))
+                this.isDataTable = true;
+        } catch (e) {
+            return;
+        }
+
+        if (this.isDataTable) {
+
+            $(`#${this.tableId}`).on('draw.dt', function () {
+
+                if (_instance.CellEdition !== null && _instance.CellEdition.Elem !== null) {
+
+                    var node = $(`#${this.tableId}`).DataTable().cell(_instance.CellEdition.cellIndex).node();
+                    _instance._EditCell(node, _instance.CellEdition.cellParams);
+
+                }
+
+            });
+
+        }
+
+    }
+
+
+
+    //Utils
     _isValidElem(elem) {
         return (elem !== null && typeof elem !== 'undefined' && $(elem).length > 0);
     }
