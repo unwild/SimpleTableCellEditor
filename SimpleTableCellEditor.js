@@ -1,3 +1,9 @@
+window.onload = function() {
+    if (!window.jQuery) {  
+		throw "jQuery is not loaded";
+    }
+}
+
 class SimpleTableCellEdition {
 
     constructor(elem, _cellParams) {
