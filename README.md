@@ -93,6 +93,20 @@ Full parameters exemple :
 
 ## Advanced options
 
+### cellParams.behaviour
+
+Default value for cellParams.behaviour :  
+```javascript
+
+    behaviour: {
+                outsideTableClickCauseCancellation: false, //if user end edition by clicking outside the table, cancel edition or save the value ?
+                anotherCellClickCauseCancellation: false //if user end edition by clicking another cell, cancel edition or save the value ?
+            }
+    
+```
+
+By default, outsideTableClick and anotherCellClick are set to "**false**", the values are saved
+
 ### cellParams.internals
 cellParams.internals can be overridden.  
 Default value for cellParams.internals :  

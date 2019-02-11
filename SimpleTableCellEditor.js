@@ -18,9 +18,15 @@ class SimpleTableCellEdition {
 
 class SimpleTableCellEditor {
 
+
     constructor(_tableId, _params) {
 
         var _instance = this;
+
+        _instance.EditionEndOrigin = {
+            OutsideTable: 1,
+            AnotherCell: 2
+        };
 
         if (typeof _tableId === 'undefined')
             _tableId = "table";
@@ -39,7 +45,7 @@ class SimpleTableCellEditor {
             var container = $(`#${_instance.tableId}`);
 
             if (!container.is(e.target) && container.has(e.target).length === 0) {
-                _instance._FreeCurrentCell();
+                _instance._FreeCurrentCell(_instance.EditionEndOrigin.OutsideTable);
             }
 
             return;
@@ -103,11 +109,13 @@ class SimpleTableCellEditor {
     //Private methods
     _HandleKeyPressed(which, elem, cellParams) {
 
+        //If validation key is pressed -> end edit cell (keep changes)
         if (cellParams.keys.validation.includes(which))
-            this._EndEditCell(elem, cellParams);
+            this._FreeCell(elem, cellParams, true);
 
+        //If cancellation key is pressed -> end edit cell (do not keep changes)
         else if (cellParams.keys.cancellation.includes(which))
-            this._CancelEditCell(elem, cellParams);
+            this._FreeCell(elem, cellParams, false);
 
     }
 
@@ -120,7 +128,7 @@ class SimpleTableCellEditor {
             return;
 
         //We free up hypothetical previous cell
-        this._FreeCurrentCell();
+        this._FreeCurrentCell(this.EditionEndOrigin.AnotherCell);
 
         this.CellEdition = new SimpleTableCellEdition(elem, cellParams);
 
@@ -197,14 +205,26 @@ class SimpleTableCellEditor {
         this.CellEdition = null;
     }
 
-    _FreeCurrentCell() {
+    _FreeCurrentCell(editionEndOrigin) {
 
         var current = this._GetCurrentEdition();
 
         if (current === null)
             return;
 
-        this._EndEditCell(current.Elem, current.cellParams);
+        var keepChanges = true;
+
+        //If cell freeing comes from outside table click and cell params cause cancellation from outside table clicks
+        if (editionEndOrigin === this.EditionEndOrigin.OutsideTable && current.cellParams.behaviour.outsideTableClickCauseCancellation)
+            keepChanges = false; //We do not keep changes (cancellation)
+
+        //If cell freeing comes from another cell click and cell params cause cancellation from another cells clicks
+        if (editionEndOrigin === this.EditionEndOrigin.AnotherCell && current.cellParams.behaviour.anotherCellClickCauseCancellation)
+            keepChanges = false; //We do not keep changes (cancellation)
+
+        this._FreeCell(current.Elem, current.cellParams, keepChanges);
+
+
     }
 
     _GetCurrentEdition() {
@@ -230,46 +250,6 @@ class SimpleTableCellEditor {
     }
 
 
-    //Defaults
-    _GetDefaultEditorParams() {
-
-        return {
-            inEditClass: "inEdit" //class used to flag cell in edit mode
-        };
-    }
-
-    _GetDefaultCellParams() {
-
-        return {
-            validation: (value) => { return true; }, //method used to validate new value
-            formatter: (value) => { return value; }, //Method used to format new value
-            keys: {
-                validation: [13],
-                cancellation: [27]
-            },
-            internals: this._GetDefaultInternals()
-        };
-
-    }
-
-    _GetDefaultInternals() {
-
-        return {
-            renderValue: (elem, formattedNewVal) => { $(elem).text(formattedNewVal); },
-            renderEditor: (elem, oldVal) => {
-                $(elem).html(`<input type='text' style="width:100%; max-width:none">`);
-                //Focus part
-                var input = $(elem).find('input');
-                input.focus();
-                input.val(oldVal);
-            },
-            extractEditorValue: (elem) => { return $(elem).find('input').val(); },
-            extractValue: (elem) => { return $(elem).text(); }
-        };
-
-    }
-
-
     //Events
     _FireOnEditEnterEvent(elem) { //Before entering edit Mode
 
@@ -280,7 +260,6 @@ class SimpleTableCellEditor {
         return evt;
     }
 
-    //Events
     _FireOnEditEnteredEvent(elem, oldVal) { //After entering edit mode
 
         $(`#${this.tableId}`).trigger({
@@ -348,6 +327,51 @@ class SimpleTableCellEditor {
             });
 
         }
+
+    }
+
+
+
+    //Defaults
+    _GetDefaultEditorParams() {
+
+        return {
+            inEditClass: "inEdit" //class used to flag cell in edit mode
+        };
+    }
+
+    _GetDefaultCellParams() {
+
+        return {
+            validation: (value) => { return true; }, //method used to validate new value
+            formatter: (value) => { return value; }, //Method used to format new value
+            keys: {
+                validation: [13],
+                cancellation: [27]
+            },
+            behaviour: {
+                outsideTableClickCauseCancellation: false,
+                anotherCellClickCauseCancellation: false
+            },
+            internals: this._GetDefaultInternals()
+        };
+
+    }
+
+    _GetDefaultInternals() {
+
+        return {
+            renderValue: (elem, formattedNewVal) => { $(elem).text(formattedNewVal); },
+            renderEditor: (elem, oldVal) => {
+                $(elem).html(`<input type='text' style="width:100%; max-width:none">`);
+                //Focus part
+                var input = $(elem).find('input');
+                input.focus();
+                input.val(oldVal);
+            },
+            extractEditorValue: (elem) => { return $(elem).find('input').val(); },
+            extractValue: (elem) => { return $(elem).text(); }
+        };
 
     }
 
