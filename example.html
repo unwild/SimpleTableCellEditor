@@ -1,0 +1,102 @@
+<html>
+<head>
+
+    <style>
+
+        table td, table.orcom thead th {
+            border: 1px solid black !important;
+        }
+
+        table thead {
+            background: #347ab6;
+            color: white;
+        }
+
+        table tbody tr {
+            background-color: #d9d9d9;
+        }
+
+
+        table thead th {
+            text-align: center;
+            padding: 0;
+        }
+
+        table tbody td {
+            padding: 3px;
+            text-align: center;
+        }
+
+            table tbody td.leftAlign {
+                text-align: left;
+            }
+
+            table tbody td.rightAlign {
+                text-align: right;
+            }
+
+        table td.busy input {
+            border: none;
+        }
+    </style>
+
+</head>
+<body>
+    <table id="myTableId">
+        <thead>
+            <tr>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="editMe">Editable text</td>
+                <td>Uneditable text</td>
+                <td>Uneditable text</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="SimpleTableCellEditor.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            var logAllEvents = true;
+
+            editor = new SimpleTableCellEditor("myTableId");
+            editor.SetEditableClass("editMe");
+
+            $('#myTableId').on("cell:edited", function (event) {
+                console.log(`'${event.oldValue}' changed to '${event.newValue}'`);
+            });
+
+            if (logAllEvents) {
+
+                $('#myTableId').on("cell:onEditEnter", function (event) {
+                    console.log('onEditEnter event');
+                });
+
+                $('#myTableId').on("cell:onEditEntered", function (event) {
+                    console.log('onEditEntered event');
+                });
+
+                $('#myTableId').on("cell:onEditExit", function (event) {
+                    console.log('onEditExit event');
+                });
+
+                $('#myTableId').on("cell:onEditExited", function (event) {
+                    console.log('onEditExited event');
+                });
+            }
+
+
+
+        });
+    </script>
+
+</body>
+</html>

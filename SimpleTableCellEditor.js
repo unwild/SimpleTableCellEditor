@@ -1,6 +1,6 @@
-window.onload = function() {
-    if (!window.jQuery) {  
-		throw "jQuery is not loaded";
+window.onload = function () {
+    if (!window.jQuery) {
+        throw "jQuery is not loaded";
     }
 }
 
@@ -113,6 +113,9 @@ class SimpleTableCellEditor {
 
     _EditCell(elem, cellParams) {
 
+        //Triggering before entering edition mode event
+        this._FireOnEditEnterEvent(elem);
+
         //We free up hypothetical previous cell
         this._FreeCurrentCell();
 
@@ -132,8 +135,8 @@ class SimpleTableCellEditor {
         //Rendering 
         cellParams.internals.renderEditor(elem, oldVal);
 
-        //Trigger custom event
-        this._FireOnEditEnterEvent(elem, oldVal);
+        //Triggering edition mode entered event
+        this._FireOnEditEnteredEvent(elem, oldVal);
 
     }
 
@@ -150,6 +153,9 @@ class SimpleTableCellEditor {
         if (!this._isValidElem(elem) || this.CellEdition === null)
             return;
 
+        //Triggering before exit event
+        this._FireOnEditExitEvent(elem, this.CellEdition.oldValue);
+
         //Get new val
         var newVal = cellParams.internals.extractEditorValue(elem);
 
@@ -164,8 +170,8 @@ class SimpleTableCellEditor {
         if (!cellParams.validation(newVal) || this.CellEdition.oldValue === formattedNewVal)
             keepChanges = false;
 
-        //Trigger custom event
-        this._FireOnEditExitEvent(elem, this.CellEdition.oldValue, formattedNewVal, keepChanges);
+        //Trigger on edit exited event
+        this._FireOnEditExitedEvent(elem, this.CellEdition.oldValue, formattedNewVal, keepChanges);
 
         if (keepChanges) {
 
@@ -260,19 +266,37 @@ class SimpleTableCellEditor {
 
 
     //Events
-    _FireOnEditEnterEvent(elem, oldVal) {
+    _FireOnEditEnterEvent(elem) { //Before entering edit Mode
 
         $(`#${this.tableId}`).trigger({
             type: "cell:onEditEnter",
+            element: elem
+        });
+    }
+
+    //Events
+    _FireOnEditEnteredEvent(elem, oldVal) { //After entering edit mode
+
+        $(`#${this.tableId}`).trigger({
+            type: "cell:onEditEntered",
             element: elem,
             oldValue: oldVal
         });
     }
 
-    _FireOnEditExitEvent(elem, oldVal, newVal, applied) {
+    _FireOnEditExitEvent(elem, oldVal) { //Before exiting edit mode
 
         $(`#${this.tableId}`).trigger({
             type: "cell:onEditExit",
+            element: elem,
+            oldValue: oldVal
+        });
+    }
+
+    _FireOnEditExitedEvent(elem, oldVal, newVal, applied) { //After exiting edit mode
+
+        $(`#${this.tableId}`).trigger({
+            type: "cell:onEditExited",
             element: elem,
             newValue: newVal,
             oldValue: oldVal,

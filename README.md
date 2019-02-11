@@ -10,14 +10,19 @@ A 'cell:edited' event is triggered if the cell content has been edited and the c
 Quick example : https://codepen.io/anon/pen/xmGOew
 
 ## Events
-* "cell:edited" event contains :
+* "**cell:edited**" : Cell has been edited with new value
   * evt.element (JQuery node object)
   * evt.oldValue
   * evt.newValue
-* "cell:onEditEnter"
+* "**cell:onEditEnter**" : Before edition mode is entered
+  * evt.element (JQuery node object)
+* "**cell:onEditEntered**" : After edition mode has been entered
   * evt.element (JQuery node object)
   * evt.oldValue
-* "cell:onEditExit"
+* "**cell:onEditExit**" : Before edition mode is exited
+  * evt.element (JQuery node object)
+  * evt.oldValue
+* "**cell:onEditExited**" : After edition mode has been exited
   * evt.element (JQuery node object)
   * evt.oldValue
   * evt.newValue
