@@ -114,7 +114,10 @@ class SimpleTableCellEditor {
     _EditCell(elem, cellParams) {
 
         //Triggering before entering edition mode event
-        this._FireOnEditEnterEvent(elem);
+        var onEditEnterEvent = this._FireOnEditEnterEvent(elem);
+
+        if (onEditEnterEvent.isDefaultPrevented())
+            return;
 
         //We free up hypothetical previous cell
         this._FreeCurrentCell();
@@ -154,7 +157,9 @@ class SimpleTableCellEditor {
             return;
 
         //Triggering before exit event
-        this._FireOnEditExitEvent(elem, this.CellEdition.oldValue);
+        var onEditExitEvent = this._FireOnEditExitEvent(elem, this.CellEdition.oldValue);
+        if (onEditExitEvent.isDefaultPrevented())
+            return;
 
         //Get new val
         var newVal = cellParams.internals.extractEditorValue(elem);
@@ -268,10 +273,11 @@ class SimpleTableCellEditor {
     //Events
     _FireOnEditEnterEvent(elem) { //Before entering edit Mode
 
-        $(`#${this.tableId}`).trigger({
-            type: "cell:onEditEnter",
-            element: elem
-        });
+        var evt = jQuery.Event("cell:onEditEnter", { element: elem });
+
+        $(`#${this.tableId}`).trigger(evt);
+
+        return evt;
     }
 
     //Events
@@ -286,11 +292,11 @@ class SimpleTableCellEditor {
 
     _FireOnEditExitEvent(elem, oldVal) { //Before exiting edit mode
 
-        $(`#${this.tableId}`).trigger({
-            type: "cell:onEditExit",
-            element: elem,
-            oldValue: oldVal
-        });
+        var evt = jQuery.Event("cell:onEditExit", { element: elem, oldValue: oldVal });
+
+        $(`#${this.tableId}`).trigger(evt);
+
+        return evt;
     }
 
     _FireOnEditExitedEvent(elem, oldVal, newVal, applied) { //After exiting edit mode
