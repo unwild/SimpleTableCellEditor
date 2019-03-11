@@ -42,7 +42,7 @@ Quick example : https://codepen.io/anon/pen/xmGOew
   * formatter : method to format new value
   * keys : keys handling validation and cancellation. Default value : { validation : [13], cancellation : [37] }  
   
-## Usage exemple
+## Usage example
 ```html
     <table id="myTableId">
 	    <tr>
