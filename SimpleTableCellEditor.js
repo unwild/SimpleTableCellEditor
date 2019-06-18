@@ -2,7 +2,7 @@ window.onload = function () {
     if (!window.jQuery) {
         throw "jQuery is not loaded";
     }
-}
+};
 
 class SimpleTableCellEdition {
 
@@ -176,12 +176,12 @@ class SimpleTableCellEditor {
         $(elem).removeClass(this.params.inEditClass);
         $(elem).html('');
 
+        //if validation method return false for new value AND value changed
+        if (!cellParams.validation(newVal) || this.CellEdition.oldValue === newVal)
+            keepChanges = false;
+
         //format new value
         var formattedNewVal = cellParams.formatter(newVal);
-
-        //if validation method return false for new value AND value changed
-        if (!cellParams.validation(newVal) || this.CellEdition.oldValue === formattedNewVal)
-            keepChanges = false;
 
         //Trigger on edit exited event
         this._FireOnEditExitedEvent(elem, this.CellEdition.oldValue, formattedNewVal, keepChanges);
