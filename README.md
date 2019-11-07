@@ -9,6 +9,28 @@ A 'cell:edited' event is triggered if the cell content has been edited and the c
 
 Quick example : https://codepen.io/anon/pen/xmGOew
 
+## Usage example
+```html
+    <table id="myTableId">
+	    <tr>
+	      <td class="editMe">Editable text</td>
+	      <td>Uneditable text</td>
+	      <td class="feedMeNumbers">Numbers only</td>
+	    </tr>
+    </table>
+```
+```javascript
+    <script>
+      editor = new SimpleTableCellEditor("myTableId");
+      editor.SetEditableClass("editMe");
+      editor.SetEditableClass("feedMeNumbers", { validation: $.isNumeric }); //If validation return false, value is not updated
+   
+      $('#myTableId').on("cell:edited", function (event) {              
+        console.log(`Cell edited : ${event.oldValue} => ${event.newValue}`);
+      });               
+    </script>
+```
+
 ## Events
 * "**cell:edited**" : Cell has been edited with new value
   * evt.element (JQuery node object)
@@ -42,27 +64,7 @@ Quick example : https://codepen.io/anon/pen/xmGOew
   * formatter : method to format new value
   * keys : keys handling validation and cancellation. Default value : { validation : [13], cancellation : [37] }  
   
-## Usage example
-```html
-    <table id="myTableId">
-	    <tr>
-	      <td class="editMe">Editable text</td>
-	      <td>Uneditable text</td>
-	      <td class="feedMeNumbers">Numbers only</td>
-	    </tr>
-    </table>
-```
-```javascript
-    <script>
-      editor = new SimpleTableCellEditor("myTableId");
-      editor.SetEditableClass("editMe");
-      editor.SetEditableClass("feedMeNumbers", { validation: $.isNumeric }); //If validation return false, value is not updated
-   
-      $('#myTableId').on("cell:edited", function (event) {              
-        console.log(`Cell edited : ${event.oldValue} => ${event.newValue}`);
-      });               
-    </script>
-```
+
 Full parameters exemple :
 ```html
     <table id="myTableId">
