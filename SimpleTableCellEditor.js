@@ -92,12 +92,12 @@ class SimpleTableCellEditor {
         var cellParams = _instance._GetExtendedCellParams(_cellParams);
 
         //If click on td (not already in edit ones)
-        $(`#${this.tableId}`).on('click', `td.${editableClass}:not(.${_instance.params.inEditClass})`, function () {
+        $(`#${_instance.tableId}`).on('click', `td.${editableClass}:not(.${_instance.params.inEditClass})`, function () {
             _instance._EditCell(this, cellParams);
         });
 
 
-        $(`#${this.tableId}`).on('keydown', `td.${editableClass}.${_instance.params.inEditClass}`, function (event) {
+        $(`#${_instance.tableId}`).on('keydown', `td.${editableClass}.${_instance.params.inEditClass}`, function (event) {
 
             _instance._HandleKeyPressed(event.which, this, cellParams);
 
