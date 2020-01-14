@@ -31,6 +31,7 @@ class SimpleTableCellEditor {
         if (typeof _tableId === 'undefined')
             _tableId = "table";
 
+        this.active = true;
         this.tableId = _tableId; //Store the tableId (One CellEditor must be instantiated for each table)
 
         this.params = _instance._GetExtendedEditorParams(_params); //Load default params over given ones
@@ -65,6 +66,9 @@ class SimpleTableCellEditor {
         //If click on td (not already in edit ones)
         $(elem).on('click', function (evt) {
 
+            if(!_instance.active)
+                return;
+
             if ($(this).hasClass(_instance.params.inEditClass))
                 return;
 
@@ -75,9 +79,11 @@ class SimpleTableCellEditor {
 
         $(elem).on('keydown', function (event) {
 
-            if (!$(this).hasClass(_instance.params.inEditClass))
+            if(!_instance.active)
                 return;
 
+            if (!$(this).hasClass(_instance.params.inEditClass))
+                return;
 
             _instance._HandleKeyPressed(event.which, this, cellParams);
 
@@ -93,18 +99,32 @@ class SimpleTableCellEditor {
 
         //If click on td (not already in edit ones)
         $(`#${_instance.tableId}`).on('click', `td.${editableClass}:not(.${_instance.params.inEditClass})`, function () {
+
+            if(!_instance.active)
+                return;
+
             _instance._EditCell(this, cellParams);
         });
 
 
         $(`#${_instance.tableId}`).on('keydown', `td.${editableClass}.${_instance.params.inEditClass}`, function (event) {
+            
+            if(!_instance.active)
+                return;
 
             _instance._HandleKeyPressed(event.which, this, cellParams);
-
         });
 
     }
 
+    Toggle(_active){
+
+        if(typeof(_active) === 'undefined')
+            _active = !this.active;
+
+            this.active = _active;
+
+    }
 
     //Private methods
     _HandleKeyPressed(which, elem, cellParams) {

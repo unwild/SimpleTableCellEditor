@@ -7,7 +7,7 @@
 Allow table content to be edited clientside, with a click inside editable cell.  
 A 'cell:edited' event is triggered if the cell content has been edited and the content changed.
 
-Quick example : https://codepen.io/anon/pen/xmGOew
+Quick example : https://codepen.io/HugRob/pen/WNbKNZP
 
 ## Usage example
 ```html
@@ -54,6 +54,8 @@ Quick example : https://codepen.io/anon/pen/xmGOew
  - SimpleTableCellEditor : constructor(tableId, tableCellEditorParams)
  - SimpleTableCellEditor : SetEditable(element, cellEditorParams)
  - SimpleTableCellEditor : SetEditableClass(className, cellEditorParams)
+ - SimpleTableCellEditor : Toggle(toggled)
+
 
 ## Parameters
 
@@ -63,7 +65,6 @@ Quick example : https://codepen.io/anon/pen/xmGOew
   * validation : method used to validate new value
   * formatter : method to format new value
   * keys : keys handling validation and cancellation. Default value : { validation : [13], cancellation : [37] }  
-  
 
 Full parameters exemple :
 ```html

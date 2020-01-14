@@ -44,6 +44,14 @@
 
                     </div>
 
+                    <div class="card-footer bg-transparent border-success">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="basicToggle" checked>
+                            <label class="form-check-label" for="basicToggle">Toggled</label>
+                          </div>
+                    </div>
+
+
                 </div>
 
 
@@ -81,6 +89,13 @@
                             </tbody>
                         </table>
 
+                    </div>
+
+                    <div class="card-footer bg-transparent border-success">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="advancedToggle" checked>
+                            <label class="form-check-label" for="advancedToggle">Toggled</label>
+                          </div>
                     </div>
 
                 </div>
@@ -134,6 +149,16 @@
 
                 }
             });
+
+            //Toggling checkboxes
+            $("#basicToggle").on('click', function(e){
+                simpleEditor.Toggle($(e.currentTarget).is(':checked'));
+            })
+
+            $("#advancedToggle").on('click', function(e){
+                advancedEditor.Toggle($(e.currentTarget).is(':checked'));
+            })
+
 
 
             if (logAllEvents) {
