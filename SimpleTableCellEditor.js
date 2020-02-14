@@ -149,7 +149,7 @@ class SimpleTableCellEditor {
         // Only run arrow or tab logic if there exists editableClasses
         if (_instance.editableClasses.length !== 0) {
             // Get arrow key behavior
-            if (cellParams.behaviour.arrowKeyCauseCursorMove) {
+            if (cellParams.behaviour.arrowKeyCauseCursorMove && shift) {
                 if (which === 39)
                     moveNext = true
                 else if (which === 37)
