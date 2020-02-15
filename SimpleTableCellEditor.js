@@ -146,8 +146,9 @@ class SimpleTableCellEditor {
         var moveDown = false
         var moveUp = false
 
-        // Only run arrow or tab logic if there exists editableClasses
-        if (_instance.editableClasses.length !== 0) {
+        // Only run arrow or tab logic if navigation is enabled and there is at least one editableClasses
+        if (_instance.params.navigation && _instance.editableClasses.length !== 0) {
+
             // Get arrow key behavior
             if (cellParams.behaviour.arrowKeyCauseCursorMove && shift) {
                 if (which === 39)
@@ -451,7 +452,8 @@ class SimpleTableCellEditor {
     _GetDefaultEditorParams() {
 
         return {
-            inEditClass: "inEdit" //class used to flag cell in edit mode
+            inEditClass: "inEdit", //class used to flag cell in edit mode,
+            navigation: true
         };
     }
 

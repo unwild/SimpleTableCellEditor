@@ -119,8 +119,8 @@
             var logAllEvents = true;
 
 
-            //Basic editor
-            var simpleEditor = new SimpleTableCellEditor("simpleEditableTable");
+            //Basic editor with no navigation
+            var simpleEditor = new SimpleTableCellEditor("simpleEditableTable", {navigation:false});
             simpleEditor.SetEditableClass("editMe");
 
             $('#simpleEditableTable').on("cell:edited", function (event) {

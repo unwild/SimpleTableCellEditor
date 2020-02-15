@@ -4,7 +4,7 @@
 #### Simple Jquery based table td editor
 *SimpleTableCellEditor requires JQuery*
 
-Allow table content to be edited clientside, with a click inside editable cell.  
+Allow table content to be edited clientside, with a click inside editable cell or by keyboard navigation.
 A 'cell:edited' event is triggered if the cell content has been edited and the content changed.
 
 Quick example : https://codepen.io/HugRob/pen/WNbKNZP
@@ -30,6 +30,10 @@ Quick example : https://codepen.io/HugRob/pen/WNbKNZP
       });               
     </script>
 ```
+
+## Navigation
+Use tab or [shift + arrow] to navigate around editable cells. 
+> Thanks jaysin586 for you work !
 
 ## Events
 * "**cell:edited**" : Cell has been edited with new value
@@ -61,6 +65,7 @@ Quick example : https://codepen.io/HugRob/pen/WNbKNZP
 
 * tableCellEditorParams
   * inEditClass : class used to flag td in edit mode
+  * navigation : true|false enables/disables navigation with arrows and tab
 * cellEditorParams
   * validation : method used to validate new value
   * formatter : method to format new value
