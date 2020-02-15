@@ -28,6 +28,9 @@ class SimpleTableCellEditor {
             AnotherCell: 2
         };
 
+        // Add collection for the classes for processing later
+        _instance.editableClasses = [];
+
         if (typeof _tableId === 'undefined')
             _tableId = "table";
 
@@ -85,7 +88,7 @@ class SimpleTableCellEditor {
             if (!$(this).hasClass(_instance.params.inEditClass))
                 return;
 
-            _instance._HandleKeyPressed(event.which, this, cellParams);
+            _instance._HandleKeyPressed(event, this, cellParams);
 
         });
 
@@ -96,6 +99,9 @@ class SimpleTableCellEditor {
         var _instance = this;
 
         var cellParams = _instance._GetExtendedCellParams(_cellParams);
+
+        // Add class to editableClass
+        _instance.editableClasses.push(`.${editableClass}`)
 
         //If click on td (not already in edit ones)
         $(`#${_instance.tableId}`).on('click', `td.${editableClass}:not(.${_instance.params.inEditClass})`, function () {
@@ -112,7 +118,7 @@ class SimpleTableCellEditor {
             if(!_instance.active)
                 return;
 
-            _instance._HandleKeyPressed(event.which, this, cellParams);
+            _instance._HandleKeyPressed(event, this, cellParams);
         });
 
     }
@@ -127,7 +133,96 @@ class SimpleTableCellEditor {
     }
 
     //Private methods
-    _HandleKeyPressed(which, elem, cellParams) {
+    _HandleKeyPressed(event, elem, cellParams) {
+        var _instance = this;
+
+        // Variables that can be used in the function
+        var which = event.which
+        var shift = event.shiftKey
+        var colIndex = $(elem).closest('td').index()
+        var rowIndex = $(elem).closest('tr').index()
+        var moveNext = false
+        var movePrevious = false
+        var moveDown = false
+        var moveUp = false
+
+        // Only run arrow or tab logic if there exists editableClasses
+        if (_instance.editableClasses.length !== 0) {
+            // Get arrow key behavior
+            if (cellParams.behaviour.arrowKeyCauseCursorMove && shift) {
+                if (which === 39)
+                    moveNext = true
+                else if (which === 37)
+                    movePrevious = true
+                else if (which === 40)
+                    moveDown = true
+                else if (which === 38)
+                    moveUp = true
+            }
+            // Get tab key behavior
+            if (cellParams.behaviour.tabKeyCauseCursorMove) {
+                if (which === 9) {
+                    if (!shift)
+                        moveNext = true
+                    else
+                        movePrevious = true
+                }
+            }
+
+            if (moveNext || movePrevious || moveDown || moveUp) {
+                event.preventDefault()
+                var $tableElementsArray = $(elem).closest('table').find(_instance.editableClasses.join(','))
+
+                //TODO: Optimize the creation of $visibleBoxes
+                var visibleBoxes = []
+                $.each($tableElementsArray, function () {
+                    if ($(this).is(":visible")) {
+                        visibleBoxes.push(this);
+                    }
+                })
+                var $visibleBoxes = $(visibleBoxes)
+                var elemIndex = $visibleBoxes.index($(elem))
+                var $obj
+                if (moveNext) {
+                    elemIndex++
+                    if (elemIndex === $visibleBoxes.length)
+                        elemIndex = 0
+                }
+                else if (movePrevious) {
+                    elemIndex--
+                    if (elemIndex < 0)
+                        elemIndex = $visibleBoxes.length - 1
+                } else if (moveDown || moveUp) {
+                    //TODO: Optimize the creation of $colBoxes
+                    var colBoxes = []
+                    $.each($visibleBoxes, function () {
+                        if ($(this).closest('td').index() === colIndex) {
+                            colBoxes.push(this);
+                        }
+                    })
+                    var $colBoxes = $(colBoxes)
+                    var myIndex = $colBoxes.index($(elem))
+                    if (moveDown) {
+                        myIndex++
+                        if (myIndex === $colBoxes.length)
+                            myIndex = 0
+                    }
+                    else if (moveUp) {
+                        myIndex--
+                        if (myIndex < 0)
+                            myIndex = $colBoxes.length - 1
+                    }
+                    var elemIndex = $visibleBoxes.index($($colBoxes[myIndex]))
+                }
+                $obj = $($visibleBoxes[elemIndex])
+                // Assumed user wanted save if they are moving around the grid
+                this._FreeCell(elem, cellParams, true)
+
+                // Show next element
+                $obj.click()
+                return
+            }
+        }
 
         //If validation key is pressed -> end edit cell (keep changes)
         if (cellParams.keys.validation.includes(which))
@@ -370,6 +465,8 @@ class SimpleTableCellEditor {
                 cancellation: [27]
             },
             behaviour: {
+                tabKeyCauseCursorMove: true,    //Allow user to move through editable fields using tab key. Circular rotation
+                arrowKeyCauseCursorMove: true,    //Allow user to move through editable fields using arrow key. Circular rotation
                 outsideTableClickCauseCancellation: false,
                 anotherCellClickCauseCancellation: false
             },

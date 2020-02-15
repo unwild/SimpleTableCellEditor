@@ -102,6 +102,8 @@ Default value for cellParams.behaviour :
 ```javascript
 
     behaviour: {
+                tabKeyCauseCursorMove: true, //Allow user to move through editable fields using tab key. Circular rotation
+                arrowKeyCauseCursorMove: true, //Allow user to move through editable fields using arrow key. Circular rotation
                 outsideTableClickCauseCancellation: false, //if user end edition by clicking outside the table, cancel edition or save the value ?
                 anotherCellClickCauseCancellation: false //if user end edition by clicking another cell, cancel edition or save the value ?
             }
